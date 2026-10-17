@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="PIcs/logo.png" type="image/x-icon">
+    <style>
+        * {
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        html {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-image: url("PIcs/Sign\ in\ .jpg");
+        }
+
+        a {
+            color: white;
+        }
+      section {
+         display: flex;
+         flex-wrap: wrap;
+         flex-direction: column;
+         gap: 20px;
+      }
+
+    </style>
+    <title>
+        Sign in to GameAuc
+    </title>
+</head>
+
+<body>
+
+    <div style="display: flex; flex-wrap: wrap; flex-direction: column; gap:50px;">
+        <h1 style="text-align: center;color: white; font-size: 35px;">
+            Login to GameAuc
+        </h1>
+    </div>
+    <div>
+        <div>
+            <img style="height: 230px; width: 180px; position: fixed; left: 10%;" src="PIcs/Eagle Logo (2).png">
+        </div>
+        <div>
+            <img style="height: 230px; width: 180px;  position: fixed; right: 10%;" src="PIcs/Eagle Logo (1).png">
+        </div>
+
+    </div>
+    <section>
+    <Form style="text-align: center;  display: flex; flex-wrap: wrap; flex-direction: column; gap: 90px; padding-top: 60px; padding-bottom: 30px;" onsubmit="handleSubmit(event)">
+        <div>
+            <input id="name" name="name" required type="text" placeholder="Username">
+        </div>
+        <div>
+            <input id="Emailaddress" name="Emailaddress" required type="email" placeholder="Email address.gmail.com">
+        </div>
+        <div>
+            <input id="Password" name="Password" required type="password" placeholder="Password">
+            <input type="submit">
+        </div>
+        </section>
+    </Form>
+    <header style=" text-align: center;">
+        <a style="font-size: 25px;" href="GameAuc Register.html">
+            <b>
+                Don't have an account?<br>
+                Click here to Register
+            </b>
+        </a>
+    </header>
+</body>
+<script>
+    function handleSubmit(e) {
+        e.preventDefault();
+        console.log("1")
+        let Usernameinput = document.getElementById("name");
+        let Username = Usernameinput.value;
+        let Emailaddressinput = document.getElementById("Emailaddress");
+        let Emailaddress = Emailaddressinput.value;
+        let passwordinput = document.getElementById("Password");
+        let password = passwordinput.value;
+        console.log("2")
+        //   Check if its an olduser
+        let userDatastring = localStorage.getItem(Username);
+
+        if (userDatastring) {
+            // get the real data is
+            let UserData = JSON.parse(userDatastring)
+            console.log(UserData)
+            // Check password and email address
+            if (UserData.Emailaddress == Emailaddress && UserData.password == password) {
+                // Go to home page
+
+                window.location.href = 'GameAuc Home.html'
+                return
+            }
+            else {
+                alert("Invalid Password or Email address")
+            }
+        }
+        else {
+            alert ("Invalid Username")
+        }
+
+    }
+</script>
+
+</html>

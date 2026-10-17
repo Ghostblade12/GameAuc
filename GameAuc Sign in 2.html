@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="shortcut icon" href="PIcs/logo.png" type="image/x-icon">
+    <title>Sign in - GameAuc</title>
+   
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        body {
+            background-image: url("PIcs/Register.jpg");
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 20px;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        /* Dark overlay to ensure form readability over complex background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 12, 22, 0.4);
+            z-index: 0;
+        }
+
+        /* Main Registration Glass Container */
+        .register-card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 460px;
+            padding: 35px 30px;
+            border: 1px solid rgba(0, 240, 255, 0.35);
+            border-radius: 16px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        /* Corner Cut / Sci-Fi Accent Borders */
+        .register-card::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 20%;
+            right: 20%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00f0ff, transparent);
+        }
+
+        .header-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #00f0ff;
+            text-transform: uppercase;
+            text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+            margin-bottom: 4px;
+            margin-top: -30px;
+        }
+
+        .header-subtitle {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: white;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .input-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-box i {
+            position: absolute;
+            left: 14px;
+            color: #00f0ff;
+            font-size: 16px;
+            z-index: 2;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            background: rgba(15, 32, 54, 0.85);
+            border: 1px solid rgba(0, 210, 255, 0.25);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-box input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 500;
+        }
+
+        .input-box input:focus {
+            border-color: #00f0ff;
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+            background: rgba(18, 40, 68, 0.95);
+        }
+
+        /* Role Selector Styling */
+        .role-section {
+            margin-bottom: 22px;
+            text-align: left;
+        }
+
+        .role-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            letter-spacing: 1.5px;
+            color: white;
+            margin-bottom: 8px;
+            display: block;
+            text-transform: uppercase;
+        }
+
+        .role-options {
+            display: flex;
+            gap: 8px;
+            background: rgba(15, 32, 54, 0.85);
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 210, 255, 0.25);
+        }
+
+        .role-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .role-option input[type="radio"] {
+            display: none;
+        }
+
+        .role-option label {
+            display: block;
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .role-option input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.5);
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #00f0ff 0%, #0072ff 100%);
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 18px rgba(0, 240, 255, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.7);
+            background: linear-gradient(135deg, #33f3ff 0%, #1a82ff 100%);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Footer Link */
+        .login-link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+        }
+
+        .login-link a {
+            color: #00f0ff;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-card">
+        <h1 class="header-title">GameAuc</h1>
+        <div class="header-subtitle">Login</div>
+
+        <form onsubmit="handleSubmit(event)">
+            <div class="form-group">
+                <div style="margin-bottom: 18px;" class="input-box">
+                    <i class="fa-solid fa-user"></i>
+                    <input id="name" type="text" name="username" placeholder="Username *" required>
+                </div>
+
+            <div class="form-group">
+                <div class="input-box">
+                    <i class="fa-solid fa-lock"></i>
+                    <input id="Password" type="password" name="password" placeholder="Password *" required>
+                </div>
+            </div>
+
+            <div class="role-section">
+                <span class="role-label">Select Your Role</span>
+                <div class="role-options">
+                    <div class="role-option">
+                        <input type="radio" id="buyer" name="role" value="Buyer" checked>
+                        <label for="buyer">Buyer</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" id="seller" name="role" value="Seller">
+                        <label for="seller">Seller</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" id="both" name="role" value="Buyer & Seller">
+                        <label for="both">Both</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Login to your account</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="GameAuc Register 2.html">Sign up here</a>
+        </div>
+        <div class="login-link">
+            Click here to get new password = <a href="Password Recovery.html">Forgot Password</a>
+        </div>
+    </div>
+      <script>
+        function handleSubmit(e) {
+        e.preventDefault();
+        console.log("1")
+        let Usernameinput = document.getElementById("name");
+        let Username = Usernameinput.value;
+        let passwordinput = document.getElementById("Password");
+        let password = passwordinput.value;
+
+        console.log("2")
+        //   Check if its an olduser
+        let userDatastring = localStorage.getItem(Username);
+ 
+        if (userDatastring) {
+            // get the real data is
+            let userData = JSON.parse(userDatastring)
+            console.log(userData)
+            // Check password
+            if (userData.password == password) {
+                // Go to home page
+
+                window.location.href = 'GameAuc Home 2.html'
+                return
+            }
+            else {
+                alert("Invalid Username or Password")
+            }
+        }
+        else {
+            alert (" Invalid Username or Password")
+        }
+
+    }
+      </script>
+</body>
+</html>

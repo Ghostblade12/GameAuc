@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameAuc - Premium Game Account Auctions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="PIcs/logo.png" type="image/x-icon">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .btn-logout {
+
+            background: linear-gradient(135deg, #7c3aed, #6366f1);
+            color: white;
+            padding: 0.6rem 1.25rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border-color: var(--danger);
+            opacity: 0.9;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Upload Area */
+        .upload-box {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            background-color: var(--card-bg);
+            cursor: pointer;
+            transition: border-color 0.2s, background-color 0.2s;
+            margin-bottom: 2.5rem;
+        }
+
+        .upload-box:hover,
+        .upload-box.dragover {
+            border-color: var(--accent-color);
+            background-color: #24334d;
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-box p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .btn-select {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-select:hover {
+            background-color: var(--accent-hover);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Active Accounts Section */
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .account-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .account-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .card-details {
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: var(--danger-color);
+        }
+
+        /* Empty State Notice */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Bottom Navigation Bar */
+        /*.Bottom-Bar {
+            position: fixed;
+            bottom: 0px;
+            width: 100%;
+            height: 80px;
+            background-color: #13163b;
+        } */
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo">🎮 GameAuc</div>
+            <div class="user-nav">
+                <a href="GameAuc Sign in 2.html" class="btn-logout">
+                    Log out
+                </a>
+            </div>
+        </header>
+
+        <section>
+            <h2 class="section-title">Upload new item for auction</h2>
+            <div class="upload-box" id="dropZone">
+                <div class="upload-icon">📤</div>
+                <p>Drag and drop your images and GIFs of Game accounts here, or click to browse</p>
+                <button class="btn-select" onclick="document.getElementById('fileInput').click()">Upload your Game
+                    account</button>
+                <input type="file" id="fileInput" accept="image/png, image/jpeg, image/gif, image/webp">
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">Active Game Accounts</h2>
+            <div id="emptyNotice" class="empty-state" style="display: none;">
+                No active accounts uploaded yet. Upload an image above to start.
+            </div>
+            <div class="accounts-grid" id="accountsGrid"></div>
+        </section>
+    </div>
+    <!-- <div class="Bottom-Bar"> 
+        <div>
+
+        </div>
+    </div> -->
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const accountsGrid = document.getElementById('accountsGrid');
+        const emptyNotice = document.getElementById('emptyNotice');
+
+        // Load items from localStorage or initialize empty array
+        function getAccounts() {
+            return JSON.parse(localStorage.getItem('gameAucItems') || '[]');
+        }
+
+        function saveAccounts(accounts) {
+            localStorage.setItem('gameAucItems', JSON.stringify(accounts));
+            renderAccounts();
+        }
+
+        // Render cards and handle the empty state
+        function renderAccounts() {
+            const accounts = getAccounts();
+            accountsGrid.innerHTML = '';
+
+            if (accounts.length === 0) {
+                emptyNotice.style.display = 'block';
+            } else {
+                emptyNotice.style.display = 'none';
+                accounts.forEach((acc) => {
+                    const card = document.createElement('div');
+                    card.className = 'account-card';
+                    card.innerHTML = `
+                        <button class="delete-btn" onclick="deleteAccount('${acc.id}')">×</button>
+                        <img src="${acc.imageSrc}" alt="Game Account">
+                        <div class="card-details">
+                            <span>Uploaded: ${acc.date}</span>
+                            <span class="status-badge">Active</span>
+                        </div>
+                    `;
+                    accountsGrid.appendChild(card);
+                });
+            }
+        }
+
+        // Handle File Processing
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const newAccount = {
+                    id: Date.now().toString(),
+                    imageSrc: e.target.result,
+                    date: new Date().toLocaleDateString()
+                };
+
+                const currentAccounts = getAccounts();
+                currentAccounts.unshift(newAccount);
+                saveAccounts(currentAccounts);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Remove an account item
+        function deleteAccount(id) {
+            const currentAccounts = getAccounts().filter(acc => acc.id !== id);
+            saveAccounts(currentAccounts);
+        }
+
+        // Drag & Drop Events
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+                fileInput.value = ''; // Reset input selection
+            }
+        });
+
+        // REAL-TIME BROADCAST ACROSS TABS / WINDOWS
+        // Listen to storage changes caused by other user sessions/tabs on the same domain
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'gameAucItems') {
+                renderAccounts();
+            }
+        });
+
+        // Initial rendering on page load
+        renderAccounts();
+    </script>
+</body>
+
+</html>

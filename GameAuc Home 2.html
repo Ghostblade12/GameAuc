@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameAuc - Home</title>
+    <link rel="shortcut icon" href="PIcs/logo.png" type="image/x-icon">
+    <style>
+        /* CHANGE (header): Shop's font, so the header text looks the same everywhere */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #151c2c;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-glow: #6366f1;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger-color: #ef4444;
+            --danger-hover: #dc2626;
+            --success-color: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; /* CHANGE: same as Shop */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            padding: 1.5rem 1.5rem 3rem;
+            background-image:
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.08) 0%, transparent 40%);
+        }
+
+        main {
+            max-width: 1200px; /* CHANGE: matches the wider header so the page lines up */
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: rgba(21, 28, 44, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--card-border);
+            z-index: 1000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .sidebar-close:hover {
+            color: var(--text-main);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(99, 102, 241, 0.15);
+            color: #ffffff;
+            transform: translateX(4px);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* CHANGE (header): copied from Shop so the header looks identical on every page */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px; /* was 960px, Shop uses 1200px */
+            margin: 0 auto 2.5rem;
+            padding: 1rem 1.25rem;
+            background: rgba(21, 28, 44, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-toggle {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 0.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(99, 102, 241, 0.25);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: var(--accent-gradient);
+            border-radius: 10px;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .span {
+            background: linear-gradient(135deg, #ffffff 30%, #a855f7 100%);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* CHANGE (header): Shop's plain ticket style (no purple pill box, no hover spin) */
+        .game-ticket-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .GameAuc-Currency{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        /* CHANGE (header/sidebar): Log out button styled exactly like Shop */
+        .sidebar-logout {
+            background: linear-gradient(135deg, #7c3aed, #6366f1);
+            color: white;
+            padding: 0.6rem 1.25rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            text-align: center;
+            margin-top: auto;
+            margin-left: 47px;
+        }
+
+        .sidebar-logout:hover {
+            opacity: 0.9;
+        }
+
+        .section-header-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            position: relative;
+            min-width: 240px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.4rem;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-glow);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .account-card-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .account-card {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 14px;
+            overflow: hidden;
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: block;
+            text-decoration: none;
+        }
+
+        .account-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .account-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .account-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(11, 15, 25, 0.92) 0%, rgba(11, 15, 25, 0.2) 60%, transparent 100%);
+            opacity: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 1.2rem;
+            transition: opacity 0.25s ease;
+        }
+
+        .account-card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .card-label {
+            color: #818cf8;
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .account-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 0.2rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            border: 1px dashed var(--card-border);
+        }
+
+        .empty-state-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            opacity: 0.6;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                display: none;
+            }
+            header {
+                padding: 0.8rem 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-title">GameAuc Menu</span>
+            <button id="sidebarCloseBtn" class="sidebar-close">&times;</button>
+        </div>
+        <ul class="sidebar-menu">
+            <li>
+                <a href="GameAuc Home 2.html" class="sidebar-link">
+                    <span>🏠</span> Home
+                </a>
+            </li>
+            <li>
+                <a href="GameAuc Shop.html" class="sidebar-link">
+                    <span>🛒</span> GameAuc Shop
+                </a>
+            </li>
+            <li>
+                <a style="margin-bottom: 300px;" href="GameAuc Inventory.html" class="sidebar-link">
+                    <span>⚔️</span> Inventory
+                </a>
+            </li>
+            <li>
+                <a style="text-align: center;" href="GameAuc Sign in 2.html" class="sidebar-logout">
+                     Log out
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <header>
+        <div class="header-left">
+            <button id="menuToggleBtn" class="menu-toggle" aria-label="Open Navigation Menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <div class="logo">
+                <div class="logo-icon">🎮</div>
+                <span class="span">GameAuc</span>
+            </div>
+        </div>
+
+        <!-- CHANGE (header): same balance + ticket elements as Shop (same ids, so the
+             balance script below can fill in the real numbers) -->
+        <div id="GameAuc balance" class="GameAuc-Currency">
+            ⚡0
+        </div>
+
+        <div id="Game Ticket" class="game-ticket-icon" title="Game Ticket">
+            🎟️ 0
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <div class="section-header-wrap">
+                <h2 class="section-title">Active Game Accounts</h2>
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" required id="searchInput" maxlength="12" class="search-input" placeholder="Search accounts by name...">
+                </div>
+            </div>
+
+            <div id="emptyNotice" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">🕹️</div>
+                <p id="emptyNoticeText">Nothing is listed on Home yet. Go to your Inventory and click an uploaded image to list it here.</p>
+            </div>
+            <div class="accounts-grid" id="accountsGrid"></div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const useFirebase = firebaseConfig.apiKey !== "YOUR_API_KEY";
+        let db, dbRef;
+
+        if (useFirebase) {
+            const app = initializeApp(firebaseConfig);
+            db = getDatabase(app);
+            dbRef = ref(db, 'auctions');
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        const accountsGrid = document.getElementById('accountsGrid');
+        const emptyNotice = document.getElementById('emptyNotice');
+        const emptyNoticeText = document.getElementById('emptyNoticeText');
+
+        // CHANGE: Home now keeps TWO separate things instead of showing everything:
+        //   inventoryItems = every image you ever uploaded in Inventory
+        //   homeIds        = ONLY the ids of the images you clicked in Inventory
+        // Home shows the items that appear in BOTH. (We save ids, not copies of the
+        // images, so we don't use up the browser's storage twice.)
+        const HOME_IDS_KEY = 'gameAucHomeIds';
+        let inventoryItems = [];
+        let homeIds = [];
+        let rawAccountsData = []; // what Home actually displays
+
+        // Turns the saved data (an array, or a Firebase object) into a plain array
+        function toArray(accounts) {
+            if (Array.isArray(accounts)) return accounts;
+            if (accounts) {
+                return Object.keys(accounts).map(key => ({
+                    id: key,
+                    ...accounts[key]
+                })).reverse();
+            }
+            return [];
+        }
+
+        // Keep only the inventory items that were sent to Home, then draw them
+        function updateHome() {
+            rawAccountsData = inventoryItems.filter(acc => homeIds.includes(acc.id));
+            applyFilter();
+        }
+
+        function applyFilter() {
+            const query = searchInput.value.trim().toLowerCase();
+            accountsGrid.innerHTML = '';
+
+            const filtered = rawAccountsData.filter(acc => {
+                const name = (acc.name || '').toLowerCase();
+                return name.includes(query);
+            });
+
+            if (filtered.length === 0) {
+                emptyNotice.style.display = 'block';
+                emptyNoticeText.textContent = query ? 'No accounts match your search.' : 'Nothing is listed on Home yet. Go to your Inventory and click an uploaded image to list it here.';
+            } else {
+                emptyNotice.style.display = 'none';
+                filtered.forEach((acc) => {
+                    const name = acc.name || 'U';
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'account-card-wrapper';
+                    wrapper.innerHTML = `
+                        <a href="GameAuc Auction House.html" class="account-card">
+                            <img src="${acc.imageSrc}" alt="${name}">
+                            <div class="card-overlay">
+                                <span class="card-label">View Auction &rarr;</span>
+                            </div>
+                        </a>
+                        <div class="account-card-title">${name}</div>
+                    `;
+                    accountsGrid.appendChild(wrapper);
+                });
+            }
+        }
+
+        searchInput.addEventListener('input', applyFilter);
+
+        if (useFirebase) {
+            // Listener 1: all uploaded images (Inventory)
+            onValue(dbRef, (snapshot) => {
+                inventoryItems = toArray(snapshot.val());
+                updateHome();
+            });
+            // Listener 2: only the ones that were sent to Home
+            onValue(ref(db, 'homeListings'), (snapshot) => {
+                homeIds = Object.keys(snapshot.val() || {});
+                updateHome();
+            });
+        } else {
+            function loadFromLocal() {
+                inventoryItems = JSON.parse(localStorage.getItem('gameAucItems') || '[]');
+                homeIds = JSON.parse(localStorage.getItem(HOME_IDS_KEY) || '[]');
+                updateHome();
+            }
+            loadFromLocal();
+            // If Inventory (another tab) changes either list, Home refreshes by itself
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'gameAucItems' || e.key === HOME_IDS_KEY) loadFromLocal();
+            });
+        }
+    </script>
+    <!-- =====================================================================
+         NEW: SIDEBAR CONTROLS
+         The old code grabbed the menu button once and attached listeners to it.
+         But the live header sync below REPLACES the header, which would destroy that
+         button and its listener. So now we listen on the whole page instead
+         ("event delegation") and check what was clicked. This survives header swaps.
+         ===================================================================== -->
+    <script>
+        function openSidebar() {
+            document.getElementById('sidebar').classList.add('open');
+            document.getElementById('sidebarOverlay').classList.add('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('#menuToggleBtn')) {
+                openSidebar();                       // the hamburger button was clicked
+            } else if (e.target.closest('#sidebarCloseBtn') || e.target.closest('#sidebarOverlay')) {
+                closeSidebar();                      // the X or the dark background was clicked
+            }
+        });
+    </script>
+
+    <!-- =====================================================================
+         NEW: LIVE HEADER (follows the Shop page, no reload needed)
+         Two things happen here:
+           PART A - the balance and ticket numbers update instantly when you buy
+                    something in the Shop (even if this page is open in another tab).
+           PART B - the header and sidebar markup + styling are copied from
+                    GameAuc Shop.html while this page is open, so if you ever edit
+                    the header in Shop, Home and Inventory update by themselves.
+         ===================================================================== -->
+    <script>
+        /* ---------- PART A: balance + tickets ---------- */
+        function showHeaderNumbers() {
+            // Same localStorage keys that the Shop page saves to
+            const savedBalance = localStorage.getItem('lastBalance');
+            if (savedBalance) {
+                document.getElementById('GameAuc balance').innerText = ' ⚡' + parseFloat(savedBalance);
+            }
+
+            const savedTickets = localStorage.getItem('lastGameTicketBalance');
+            if (savedTickets) {
+                document.getElementById('Game Ticket').innerText = ' 🎟️ ' + parseInt(savedTickets);
+            }
+        }
+
+        showHeaderNumbers(); // show the numbers as soon as the page opens
+
+        // The "storage" event fires in this page whenever ANOTHER tab (the Shop)
+        // changes localStorage. That is what makes the numbers update without reloading.
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'lastBalance' || e.key === 'lastGameTicketBalance') {
+                showHeaderNumbers();
+            }
+        });
+
+        /* ---------- PART B: copy the header from the Shop page ---------- */
+        const SHOP_PAGE = 'GameAuc Shop.html'; // the page we copy the header from
+        const SYNC_EVERY_MS = 10000;           // how often to re-check Shop (10 seconds)
+        let lastShopHtml = '';                 // remembers Shop's last version so we only update on a real change
+
+        // Only these CSS rules are copied from Shop (the header + sidebar ones),
+        // so the rest of THIS page's design is left alone.
+        const HEADER_CSS_PATTERN = /^(header|\.header-left|\.menu-toggle|\.logo|\.logo-icon|\.span|\.GameAuc-Currency|\.game-ticket-icon|\.sidebar)/;
+
+        // Walk through a list of CSS rules and keep only the header-related ones
+        function pickHeaderRules(rules) {
+            let css = '';
+            for (const rule of rules) {
+                if (rule instanceof CSSStyleRule) {
+                    const selectors = rule.selectorText.split(',').map(s => s.trim());
+                    if (selectors.every(s => HEADER_CSS_PATTERN.test(s))) css += rule.cssText + '\n';
+                } else if (rule instanceof CSSMediaRule) {
+                    // e.g. the "hide logo on phones" rule lives inside @media
+                    const inner = pickHeaderRules(rule.cssRules);
+                    if (inner) css += '@media ' + rule.conditionText + ' {\n' + inner + '}\n';
+                }
+            }
+            return css;
+        }
+
+        async function syncHeaderWithShop() {
+            try {
+                // 1) Download the Shop page as plain text
+                const response = await fetch(encodeURI(SHOP_PAGE), { cache: 'no-store' });
+                if (!response.ok) return;
+                const shopHtml = await response.text();
+
+                // 2) Nothing changed in Shop since last time? Then do nothing.
+                if (shopHtml === lastShopHtml) return;
+                lastShopHtml = shopHtml;
+
+                // 3) Turn the text into a document we can search (it is NOT shown on screen)
+                const shopDoc = new DOMParser().parseFromString(shopHtml, 'text/html');
+
+                // 4) Copy Shop's header styling
+                try {
+                    const shopCss = shopDoc.querySelector('style').textContent
+                        .replace(/@import\s+url\([^)]*\);?/g, ''); // font import not needed, already loaded here
+                    const sheet = new CSSStyleSheet();
+                    sheet.replaceSync(shopCss);
+
+                    let styleTag = document.getElementById('shop-header-style');
+                    if (!styleTag) {
+                        styleTag = document.createElement('style');
+                        styleTag.id = 'shop-header-style';
+                        document.head.appendChild(styleTag); // added last so it wins over this page's own header CSS
+                    }
+                    styleTag.textContent = pickHeaderRules(sheet.cssRules);
+                } catch (cssError) {
+                    console.warn('Header styles were not synced:', cssError);
+                }
+
+                // 5) Swap in Shop's header
+                const newHeader = shopDoc.querySelector('header');
+                const oldHeader = document.querySelector('header');
+                if (newHeader && oldHeader) {
+                    oldHeader.replaceWith(document.importNode(newHeader, true));
+                }
+
+                // 6) Swap in Shop's sidebar menu (keeping it open if it was open)
+                const newSidebar = shopDoc.querySelector('aside');
+                const oldSidebar = document.getElementById('sidebar');
+                if (newSidebar && oldSidebar) {
+                    const wasOpen = oldSidebar.classList.contains('open');
+                    const importedSidebar = document.importNode(newSidebar, true);
+                    if (wasOpen) importedSidebar.classList.add('open');
+                    oldSidebar.replaceWith(importedSidebar);
+                }
+
+                // 7) Shop's header says "⚡0" until a script fills it in, so refill the real numbers
+                showHeaderNumbers();
+            } catch (error) {
+                // Happens if the page is opened straight from a folder (file://) where
+                // browsers block fetch(). The built-in header above still works as a backup.
+                console.warn('Could not sync header with Shop:', error);
+            }
+        }
+
+        syncHeaderWithShop();                                       // once when the page opens
+        setInterval(() => {                                         // then keep checking...
+            if (!document.hidden) syncHeaderWithShop();             // ...but only while you are looking at this tab
+        }, SYNC_EVERY_MS);
+        document.addEventListener('visibilitychange', () => {       // and right when you come back to this tab
+            if (!document.hidden) syncHeaderWithShop();
+        });
+    </script>
+</body>
+</html>

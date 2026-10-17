@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="PIcs/logo.png" type="image/x-icon">
+  <title>GameAuc - Premium Game Account Marketplace</title>
+  <style>
+    /* Reset & CSS Variables */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    :root {
+      --bg-dark: #0a0710;
+      --bg-card: rgba(24, 19, 43, 0.6);
+      --bg-card-alt: rgba(30, 24, 56, 0.8);
+      --primary: #8b5cf6;
+      --primary-hover: #7c3aed;
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.3);
+      --primary-glow: rgba(139, 92, 246, 0.4);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(139, 92, 246, 0.2);
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image:
+        radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Navigation */
+    header {
+      background: rgba(10, 7, 16, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .navbar {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 2rem;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+      text-shadow: 0 0 8px var(--primary-glow);
+    }
+
+    .btn-login {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-login:hover {
+      box-shadow: 0 0 15px var(--primary-glow);
+      transform: translateY(-2px);
+    }
+
+    /* Banner Image Fix */
+    .banner-img {
+      position: fixed;
+      top: 50px;
+      width: 100%;
+      height: auto;
+      max-height: 300px;
+      object-fit: cover;
+      border-bottom: 1px solid var(--border-color);
+      opacity: 0.7;
+    }
+
+    /* Container layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 6rem 2rem;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(to right, #fff, #c4b5fd);
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
+    }
+
+    .hero-description {
+      max-width: 700px;
+      margin: 0 auto 2rem;
+      font-size: 1.15rem;
+      color: White;
+    }
+
+    .ticket-badge {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 1rem 1.5rem;
+      border-radius: 50px;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .ticket-badge p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .ticket-badge span {
+      color: #ef4444;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .btn-cta {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent), #059669);
+      color: #fff;
+      padding: 1rem 3rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px var(--accent-glow);
+    }
+
+    /* Sections Shared Styling */
+    section {
+      margin-bottom: 6rem;
+    }
+
+    .section-title {
+      font-size: 2.25rem;
+      margin-bottom: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), transparent);
+      border-radius: 2px;
+    }
+
+    /* How It Works Grid */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 2rem;
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .step-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 15px var(--primary-glow);
+    }
+
+    .step-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--primary);
+      margin-bottom: 1rem;
+      line-height: 1;
+    }
+
+    .step-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      color: #fff;
+    }
+
+    .step-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Detailed Sections */
+    .content-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 3rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .developer-profile {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .dev-card {
+      background: var(--bg-card-alt);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .dev-card:hover {
+      border-color: var(--border-color);
+      background: rgba(45, 27, 84, 0.4);
+    }
+
+    .dev-card h4 {
+      color: var(--primary);
+      font-size: 1.2rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .dev-card .role {
+      font-size: 0.9rem;
+      color: #fff;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 0 15px var(--accent-glow);
+    }
+
+    .product-card h3 {
+      color: #fff;
+      margin-bottom: 0.75rem;
+      font-size: 1.3rem;
+    }
+
+    /* Notice Box */
+    .notice-box {
+      background-color: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-left: 4px solid #ef4444;
+      color: #fca5a5;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 2rem 0 4rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .notice-box strong {
+      color: #ef4444;
+    }
+
+    .notice-box span.google {
+      color: #60a5fa;
+      font-weight: 600;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      padding: 3rem 2rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      background: rgba(10, 7, 16, 0.8);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        /* In a real app, replace with a hamburger menu */
+      }
+
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .content-box {
+        padding: 1.5rem;
+      }
+
+      .ticket-badge {
+        border-radius: 12px;
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+      }
+    }
+
+    /* Animation Keyframes */
+    @keyframes glideFromTop {
+      0% {
+        opacity: 0;
+        transform: translateY(-80px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes glideFromSide {
+      0% {
+        opacity: 0;
+        transform: translateX(-80px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Base state: Hidden when out of view */
+    .step-card {
+      opacity: 0;
+    }
+
+    /* First 3 cards: Glide from top */
+    .step-card.visible:nth-child(-n+3) {
+      animation: glideFromTop 0.8s ease-out forwards;
+    }
+
+    /* Everything under the first 3 (cards 4, 5, 6...): Glide from side */
+    .step-card.visible:nth-child(n+4) {
+      animation: glideFromSide 0.8s ease-out forwards;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navigation Bar -->
+  <header>
+    <nav class="navbar">
+      <a href="#" class="logo">🎮 GameAuc</a>
+      <ul class="nav-links">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#about-us">About Us</a></li>
+        <li><a href="#our-aim">Our Aim</a></li>
+        <li><a href="#products">Products</a></li>
+      </ul>
+      <a href="GameAuc Sign in 2.html" class="btn-login">Log In</a>
+    </nav>
+  </header>
+
+  <!-- Fixed Image Tag -->
+  <img class="banner-img" src="PIcs/GameAuc  Logo .jpg" alt="GameAuc Banner Image" onerror="this.style.display='none'">
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Bid & Win Rare Game Accounts</h1>
+    <p class="hero-description">
+      <strong>
+      GameAuc is a premium marketplace designed to safely buy, sell, and auction high-tier gaming accounts with GameAuc currency.
+      Whether you are looking to monetize your progress or acquire exclusive accounts loaded with rare items,
+      we provide a secure ecosystem to convert your gaming effort into real financial value.
+    </strong>
+    </p>
+
+    <div class="ticket-badge">
+      <p>💡 <strong>Introducing Game Tickets:</strong> Purchase a Game Ticket for <span>$15</span> and instantly redeem
+        accounts valued up to <span>$25</span>.</p>
+    </div>
+    <br>
+    <a href="GameAuc Register 2.html" class="btn-cta">Register Now</a>
+  </section>
+
+  <div class="container">
+
+    <!-- How It Works Section -->
+    <section id="how-it-works">
+      <h2 class="section-title">How GameAuc Works</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <h3>Create an Account</h3>
+          <p>Register as a buyer or seller to gain full access to exclusive account listings and live auction events.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <h3>Use Game Tickets</h3>
+          <p>Buy a Game Ticket for $15 and use it to acquire game accounts valued up to $25, giving you instant bonus
+            value.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <h3>Buy Accounts</h3>
+          <p>Purchase gaming accounts from verified sellers using standard Cash payments or our specialized Game
+            Tickets.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">04</div>
+          <h3>Sell Your Progress</h3>
+          <p>List your leveled-up accounts securely to monetize your time, effort, and collected in-game resources.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">05</div>
+          <h3>Earn & Reinvest</h3>
+          <p>Receive cash payouts or Game Tickets that can be seamlessly reinvested into higher-level account.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">06</div>
+          <h3>Trade Up</h3>
+          <p>Buy undervalued accounts, level them up further, and sell them back to the marketplace for higher profit
+            margins.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about-us">
+      <h2 class="section-title">About Us</h2>
+      <div class="content-box">
+        <p>
+          GameAuc was created out of a passion for software development and gaming economics.
+          Founded by lead Full-Stack Developer Uwagbale Andrew, GameAuc is designed to address a major gap in the gaming
+          space: giving gamers a structured, secure marketplace to trade valuable digital assets.
+        </p>
+        <p style="margin-top: 1rem;">
+          Built with collaborative support from co-developer David Uwagbale, the platform bridges modern web development
+          standards with gaming utilities to provide a smooth, fast, and transparent trading environment.
+        </p>
+
+        <div class="developer-profile">
+          <div class="dev-card">
+            <h4>Uwagbale Andrew</h4>
+            <div class="role">Founder & Lead Full-Stack Developer</div>
+            <p>Handle: <strong>Andy_dev</strong></p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Born August 26, 2015.
+              Specializes in building full-stack web applications and user-centric digital products.</p>
+          </div>
+          <div class="dev-card">
+            <h4>David Uwagbale</h4>
+            <div class="role">Co-Developer</div>
+            <p>Handles: <strong>Dev_id</strong> | <strong>DavidTimi1</strong></p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Assists in system design,
+              platform infrastructure, and product integrations across the portfolio.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Our Aim Section -->
+    <section id="our-aim">
+      <h2 class="section-title">Our Aim</h2>
+      <div class="content-box">
+        <p>
+          Our mission is to empower individuals worldwide to monetize their skills, passions, and digital talents.
+          We believe that time spent mastering a craft—whether playing video games, participating in esports, or
+          operating in digital finance—has real financial value.
+        </p>
+        <p style="margin-top: 1rem;">
+          GameAuc serves as our flagship solution for gamers, creating a reliable bridge between digital entertainment
+          and real-world income, helping users earn tangible cash for their personal welfare.
+        </p>
+      </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products">
+      <h2 class="section-title">Our Products</h2>
+      <p style="color: var(--text-muted); margin-bottom: 2rem;">Explore the suite of applications and digital tools
+        developed across our team's portfolio:</p>
+
+      <div class="product-grid">
+        <div class="product-card">
+          <h3>Message50</h3>
+          <p>A streamlined communication tool designed to make messaging faster, simpler, and significantly more
+            efficient.</p>
+        </div>
+        <div class="product-card">
+          <h3>Pic2plate</h3>
+          <p>An innovative image recognition application designed to transform visual media into actionable, organized
+            data.</p>
+        </div>
+        <div class="product-card">
+          <h3>Framez</h3>
+          <p>A modern creative media tool designed for like twitter used for chat, sending images and video.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="notice-box">
+      <div>
+        <p><strong>⚠️ Security Notice:</strong> Beware of fake Game Account links. Before finalizing any purchase
+          of any Game account, ask <span class="google">Google</span> and immediatly after successful payment change the link of your new Game account.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 GameAuc. Developed by Uwagbale Andrew & David Uwagbale. All rights reserved.</p>
+  </footer>
+</body>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // Add animation class when entering viewport
+          entry.target.classList.add('visible');
+        } else {
+          // Remove class when leaving viewport so it resets for next time
+          entry.target.classList.remove('visible');
+        }
+      });
+    }, {
+      threshold: 0.15 // Triggers when 15% of the element is in view
+    });
+
+    document.querySelectorAll('.step-card').forEach((card) => {
+      observer.observe(card);
+    });
+  });
+</script>
+</html>
