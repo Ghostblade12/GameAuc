@@ -516,6 +516,7 @@
             }
         }
     </style>
+    <script src="gameauc-i18n.js"></script>
 </head>
 
 <body>
@@ -851,12 +852,12 @@
             // Same localStorage keys that the Shop page saves to
             const savedBalance = localStorage.getItem('lastBalance');
             if (savedBalance) {
-                document.getElementById('GameAuc balance').innerText = ' ⚡' + parseFloat(savedBalance);
+                document.getElementById('GameAuc balance').innerText = ' ⚡' + GameAucI18n.number(parseFloat(savedBalance));
             }
 
             const savedTickets = localStorage.getItem('lastGameTicketBalance');
             if (savedTickets) {
-                document.getElementById('Game Ticket').innerText = ' 🎟️ ' + parseInt(savedTickets);
+                document.getElementById('Game Ticket').innerText = ' 🎟️ ' + GameAucI18n.number(parseInt(savedTickets));
             }
         }
 
