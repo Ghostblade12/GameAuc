@@ -614,28 +614,6 @@
     </main>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        const useFirebase = firebaseConfig.apiKey !== "YOUR_API_KEY";
-        let db, dbRef;
-
-        if (useFirebase) {
-            const app = initializeApp(firebaseConfig);
-            db = getDatabase(app);
-            dbRef = ref(db, 'auctions');
-        }
-
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const accountNameInput = document.getElementById('accountNameInput');
@@ -648,16 +626,7 @@
 
         function renderAccounts(accounts) {
             accountsGrid.innerHTML = '';
-            let accountsArray = [];
-            if (Array.isArray(accounts)) {
-                accountsArray = accounts;
-            } else if (accounts) {
-                accountsArray = Object.keys(accounts).map(key => ({
-                    id: key,
-                    ...accounts[key]
-                })).reverse();
-            }
-            rawAccountsData = accountsArray;
+            rawAccountsData = Array.isArray(accounts) ? accounts : [];
             applyFilter();
         }
 
@@ -713,19 +682,12 @@
         const HOME_IDS_KEY = 'gameAucHomeIds'; // the list of ids that Home is allowed to show
 
         function sendToHome(id) {
-            if (useFirebase) {
-                // Firebase: mark this id as listed, then go home once it's saved
-                set(ref(db, 'homeListings/' + id), true).then(() => {
-                    window.location.href = 'GameAuc Home 2.html';
-                });
-            } else {
-                // Local: add the id to the Home list (only if it isn't there already,
-                // so clicking the same image twice doesn't create a duplicate)
-                const homeIds = JSON.parse(localStorage.getItem(HOME_IDS_KEY) || '[]');
-                if (!homeIds.includes(id)) homeIds.push(id);
-                localStorage.setItem(HOME_IDS_KEY, JSON.stringify(homeIds));
-                window.location.href = 'GameAuc Home 2.html'; // take me to Home
-            }
+            // Add the id to the Home list (only if it isn't there already,
+            // so clicking the same image twice doesn't create a duplicate)
+            const homeIds = JSON.parse(localStorage.getItem(HOME_IDS_KEY) || '[]');
+            if (!homeIds.includes(id)) homeIds.push(id);
+            localStorage.setItem(HOME_IDS_KEY, JSON.stringify(homeIds));
+            window.location.href = 'GameAuc Home 2.html'; // take me to Home
         }
 
         // One listener for the whole grid ("event delegation"): it works for every card,
@@ -773,24 +735,21 @@
                 date: new Date().toLocaleDateString()
             };
 
-            // CHANGE: both branches below used to end with
-            //   window.location.href = "GameAuc Home 2.html";
-            // which sent you home right after uploading. Those redirects are removed.
-            // Now the image is saved, the list on THIS page refreshes, and you stay here.
-            // Going home only happens when you click an uploaded image card (see applyFilter).
-            if (useFirebase) {
-                const newAccRef = push(dbRef);
-                set(newAccRef, newAccount); // onValue() below re-renders the list automatically
-            } else {
-                const newId = Date.now().toString();
-                newAccount.id = newId;
-                const currentAccounts = JSON.parse(localStorage.getItem('gameAucItems') || '[]');
-                currentAccounts.unshift(newAccount);
+            // Save the image, refresh the list on THIS page, and stay here.
+            // Going home only happens when you click an uploaded image card.
+            const newId = Date.now().toString();
+            newAccount.id = newId;
+            const currentAccounts = JSON.parse(localStorage.getItem('gameAucItems') || '[]');
+            currentAccounts.unshift(newAccount);
+            try {
                 localStorage.setItem('gameAucItems', JSON.stringify(currentAccounts));
-                // The "storage" event does not fire in the tab that made the change,
-                // so we refresh the list ourselves so the new image shows up right away.
-                renderAccounts(currentAccounts);
+            } catch (err) {
+                alert('Could not save: the image is too large for browser storage. Try a smaller image.');
+                return;
             }
+            // The "storage" event does not fire in the tab that made the change,
+            // so we refresh the list ourselves so the new image shows up right away.
+            renderAccounts(currentAccounts);
 
             // CHANGE: clear the name box so you can upload another account right away
             accountNameInput.value = '';
@@ -798,34 +757,22 @@
 
         function deleteAccount(id) {
             // CHANGE: deleting an image from Inventory also removes it from Home's list
-            if (useFirebase) {
-                remove(ref(db, 'auctions/' + id));
-                remove(ref(db, 'homeListings/' + id));
-            } else {
-                let currentAccounts = JSON.parse(localStorage.getItem('gameAucItems') || '[]');
-                currentAccounts = currentAccounts.filter(acc => acc.id !== id);
-                localStorage.setItem('gameAucItems', JSON.stringify(currentAccounts));
+            let currentAccounts = JSON.parse(localStorage.getItem('gameAucItems') || '[]');
+            currentAccounts = currentAccounts.filter(acc => acc.id !== id);
+            localStorage.setItem('gameAucItems', JSON.stringify(currentAccounts));
 
-                const homeIds = JSON.parse(localStorage.getItem(HOME_IDS_KEY) || '[]');
-                localStorage.setItem(HOME_IDS_KEY, JSON.stringify(homeIds.filter(homeId => homeId !== id)));
+            const homeIds = JSON.parse(localStorage.getItem(HOME_IDS_KEY) || '[]');
+            localStorage.setItem(HOME_IDS_KEY, JSON.stringify(homeIds.filter(homeId => homeId !== id)));
 
-                renderAccounts(currentAccounts);
+            renderAccounts(currentAccounts);
+        }
+
+        renderAccounts(JSON.parse(localStorage.getItem('gameAucItems') || '[]'));
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'gameAucItems') {
+                renderAccounts(JSON.parse(localStorage.getItem('gameAucItems') || '[]'));
             }
-        }
-
-        if (useFirebase) {
-            onValue(dbRef, (snapshot) => {
-                const data = snapshot.val();
-                renderAccounts(data || []);
-            });
-        } else {
-            renderAccounts(JSON.parse(localStorage.getItem('gameAucItems') || '[]'));
-            window.addEventListener('storage', (e) => {
-                if (e.key === 'gameAucItems') {
-                    renderAccounts(JSON.parse(localStorage.getItem('gameAucItems') || '[]'));
-                }
-            });
-        }
+        });
 
         function handleFile(file) {
             const accName = accountNameInput.value.trim();
@@ -1014,5 +961,132 @@
             if (!document.hidden) syncHeaderWithShop();
         });
     </script>
+<!-- GameAuc network status bar -->
+<style id="net-status-style">
+    #netStatusBar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2147483647;
+        padding: 12px 16px;
+        text-align: center;
+        font: 700 15px/1.2 'Segoe UI', Tahoma, Arial, sans-serif;
+        letter-spacing: 0.5px;
+        color: #fff;
+        background: #dc2626;
+        transform: translateY(100%);
+        transition: transform 0.45s ease, background-color 0.4s ease;
+        pointer-events: none;
+    }
+    #netStatusBar.show { transform: translateY(0); }
+    #netStatusBar.connected { background: #16a34a; }
+    #netStatusBar .dots::after {
+        content: '';
+        animation: netDots 1.2s steps(4, end) infinite;
+    }
+    #netStatusBar.connected .dots::after,
+    #netStatusBar.offline .dots::after { animation: none; content: ''; }
+    @keyframes netDots {
+        0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; }
+    }
+</style>
+<div id="netStatusBar" role="status" aria-live="polite"><span class="text"></span><span class="dots"></span></div>
+<script id="net-status-script">
+(function () {
+    var bar = document.getElementById('netStatusBar');
+    var text = bar.querySelector('.text');
+    var hideTimer = null;
+    var wasBad = false;          // true once we've shown a red state
+    var state = 'good';          // good | reconnecting | offline
+    var probing = false;
+
+    function show(cls, msg) {
+        clearTimeout(hideTimer);
+        bar.className = cls + ' show';
+        text.textContent = msg;
+    }
+
+    function setState(next) {
+        if (next === state) return;
+        state = next;
+        if (next === 'offline') {
+            wasBad = true;
+            show('offline', 'Offline');
+        } else if (next === 'reconnecting') {
+            wasBad = true;
+            show('reconnecting', 'Reconnecting');
+        } else if (next === 'good' && wasBad) {
+            wasBad = false;
+            show('connected', 'Connected');
+            hideTimer = setTimeout(function () {
+                bar.classList.remove('show');   // glide back down
+            }, 2500);
+        }
+    }
+
+    // Real connectivity test: online if ANY of several hosts responds
+    // (one host being blocked on a network no longer causes a false "Reconnecting")
+    var ENDPOINTS = [
+        'https://www.gstatic.com/generate_204',
+        'https://fonts.googleapis.com/css2?family=Inter',
+        'https://1.1.1.1/cdn-cgi/trace',
+        'https://www.cloudflare.com/cdn-cgi/trace'
+    ];
+    var fails = 0;               // consecutive failed checks
+    var FAILS_NEEDED = 2;        // avoid flicker from one bad check
+
+    function ping(url, ms) {
+        return new Promise(function (resolve, reject) {
+            var ctrl = window.AbortController ? new AbortController() : null;
+            var t = setTimeout(function () { if (ctrl) ctrl.abort(); reject(); }, ms);
+            fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + '_=' + Date.now(), {
+                mode: 'no-cors', cache: 'no-store', signal: ctrl ? ctrl.signal : undefined
+            }).then(function () { clearTimeout(t); resolve(); },
+                    function () { clearTimeout(t); reject(); });
+        });
+    }
+
+    function anyOk() {
+        return new Promise(function (resolve) {
+            var left = ENDPOINTS.length, done = false;
+            ENDPOINTS.forEach(function (u) {
+                ping(u, 6000).then(function () {
+                    if (!done) { done = true; resolve(true); }
+                }, function () {
+                    if (--left === 0 && !done) resolve(false);
+                });
+            });
+        });
+    }
+
+    function probe() {
+        if (!navigator.onLine) { fails = FAILS_NEEDED; setState('offline'); return; }
+        if (probing) return;
+        probing = true;
+        anyOk().then(function (ok) {
+            probing = false;
+            if (ok) { fails = 0; setState('good'); }
+            else if (++fails >= FAILS_NEEDED) {
+                setState(navigator.onLine ? 'reconnecting' : 'offline');
+            }
+        });
+    }
+
+    window.addEventListener('offline', function () { setState('offline'); });
+    window.addEventListener('online', function () {
+        if (state === 'offline') setState('reconnecting');
+        probe();
+    });
+    if (navigator.connection && navigator.connection.addEventListener) {
+        navigator.connection.addEventListener('change', probe);
+    }
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) probe(); });
+
+    setInterval(probe, 4000);
+    if (!navigator.onLine) setState('offline'); else probe();
+})();
+</script>
+
 </body>
 </html>

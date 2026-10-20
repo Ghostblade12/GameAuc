@@ -65,19 +65,274 @@
             color: #60a5fa;
             font-weight: 600;
         }
+
+        /* Page wrapper + the image shown under the notice */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .notice-box {
+            margin: 0 0 2rem;
+            /* was 2rem 0 4rem: now sits right above the image */
+        }
+
+        .auction-item {
+            text-align: center;
+        }
+
+        .auction-item img {
+            width: 100%;
+            max-width: 520px;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .auction-item h2 {
+            margin-top: 1rem;
+            font-weight: 800;
+        }
+
+        .auction-empty {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            border: 1px dashed var(--border-color);
+            border-radius: 14px;
+        }
+
+        .join-and-withdraw{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-top: 20px;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .join {
+            color: white;
+            border: white;
+            border-radius: 10px;
+            background-color: lightgreen;
+            padding: 0.5rem 0.8rem;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .join:hover {
+            opacity: 0.8;
+            background-color: rgb(152, 212, 152);
+        }
     </style>
 </head>
 
 <body>
-    <div class="notice-box">
-        <div>
-            <p>
-                <strong>⚠️ Security Note:</strong> Beware of fake Game Account links. Before finalizing any purchase
-                of any Game account, ask <span class="google">Google</span> and immediatly after successful payment
-                change the link of your new Game account.
-            </p>
+    <main>
+        <!-- 1) The notice always comes first -->
+        <div class="notice-box">
+            <div>
+                <p>
+                    <strong>⚠️ Security Note:</strong> Beware of fake Game Account links, Before finalizing any purchase
+                    of any Game account.
+                </p>
+            </div>
         </div>
-    </div>
-      
+
+        <!-- 2) The image you clicked on Home appears here, under the notice -->
+        <section id="auctionItem"></section>
+
+        <section class="join-and-withdraw">
+            <button class="join">
+                ▶ Join
+            </button>
+        </section>
+    </main>
+
+    <script type="module">
+        const container = document.getElementById('auctionItem');
+
+        // Home puts the clicked image's id in the link: ...Auction House.html?id=123
+        const selectedId = new URLSearchParams(window.location.search).get('id');
+
+        function showEmpty(message) {
+            container.innerHTML = '';
+            const box = document.createElement('div');
+            box.className = 'auction-empty';
+            box.textContent = message;
+            container.appendChild(box);
+        }
+
+        function showItem(item) {
+            if (!item) {
+                showEmpty('This item could not be found. Go back to Home and pick an image.');
+                return;
+            }
+            container.innerHTML = '';
+            const wrap = document.createElement('div');
+            wrap.className = 'auction-item';
+
+            const img = document.createElement('img');
+            img.src = item.imageSrc;
+            img.alt = item.name || 'Game account';
+
+            const title = document.createElement('h2');
+            title.textContent = item.name || '';
+
+            wrap.append(img, title);
+            container.appendChild(wrap);
+        }
+
+        function load() {
+            if (!selectedId) {
+                showEmpty('No item selected. Go back to Home and pick an image.');
+                return;
+            }
+
+            const items = JSON.parse(localStorage.getItem('gameAucItems') || '[]');
+            showItem(items.find(i => String(i.id) === selectedId));
+        }
+        load();
+    </script>
+    <script>
+        
+    </script>
+<!-- GameAuc network status bar -->
+<style id="net-status-style">
+    #netStatusBar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2147483647;
+        padding: 12px 16px;
+        text-align: center;
+        font: 700 15px/1.2 'Segoe UI', Tahoma, Arial, sans-serif;
+        letter-spacing: 0.5px;
+        color: #fff;
+        background: #dc2626;
+        transform: translateY(100%);
+        transition: transform 0.45s ease, background-color 0.4s ease;
+        pointer-events: none;
+    }
+    #netStatusBar.show { transform: translateY(0); }
+    #netStatusBar.connected { background: #16a34a; }
+    #netStatusBar .dots::after {
+        content: '';
+        animation: netDots 1.2s steps(4, end) infinite;
+    }
+    #netStatusBar.connected .dots::after,
+    #netStatusBar.offline .dots::after { animation: none; content: ''; }
+    @keyframes netDots {
+        0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; }
+    }
+</style>
+<div id="netStatusBar" role="status" aria-live="polite"><span class="text"></span><span class="dots"></span></div>
+<script id="net-status-script">
+(function () {
+    var bar = document.getElementById('netStatusBar');
+    var text = bar.querySelector('.text');
+    var hideTimer = null;
+    var wasBad = false;          // true once we've shown a red state
+    var state = 'good';          // good | reconnecting | offline
+    var probing = false;
+
+    function show(cls, msg) {
+        clearTimeout(hideTimer);
+        bar.className = cls + ' show';
+        text.textContent = msg;
+    }
+
+    function setState(next) {
+        if (next === state) return;
+        state = next;
+        if (next === 'offline') {
+            wasBad = true;
+            show('offline', 'Offline');
+        } else if (next === 'reconnecting') {
+            wasBad = true;
+            show('reconnecting', 'Reconnecting');
+        } else if (next === 'good' && wasBad) {
+            wasBad = false;
+            show('connected', 'Connected');
+            hideTimer = setTimeout(function () {
+                bar.classList.remove('show');   // glide back down
+            }, 2500);
+        }
+    }
+
+    // Real connectivity test: online if ANY of several hosts responds
+    // (one host being blocked on a network no longer causes a false "Reconnecting")
+    var ENDPOINTS = [
+        'https://www.gstatic.com/generate_204',
+        'https://fonts.googleapis.com/css2?family=Inter',
+        'https://1.1.1.1/cdn-cgi/trace',
+        'https://www.cloudflare.com/cdn-cgi/trace'
+    ];
+    var fails = 0;               // consecutive failed checks
+    var FAILS_NEEDED = 2;        // avoid flicker from one bad check
+
+    function ping(url, ms) {
+        return new Promise(function (resolve, reject) {
+            var ctrl = window.AbortController ? new AbortController() : null;
+            var t = setTimeout(function () { if (ctrl) ctrl.abort(); reject(); }, ms);
+            fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + '_=' + Date.now(), {
+                mode: 'no-cors', cache: 'no-store', signal: ctrl ? ctrl.signal : undefined
+            }).then(function () { clearTimeout(t); resolve(); },
+                    function () { clearTimeout(t); reject(); });
+        });
+    }
+
+    function anyOk() {
+        return new Promise(function (resolve) {
+            var left = ENDPOINTS.length, done = false;
+            ENDPOINTS.forEach(function (u) {
+                ping(u, 6000).then(function () {
+                    if (!done) { done = true; resolve(true); }
+                }, function () {
+                    if (--left === 0 && !done) resolve(false);
+                });
+            });
+        });
+    }
+
+    function probe() {
+        if (!navigator.onLine) { fails = FAILS_NEEDED; setState('offline'); return; }
+        if (probing) return;
+        probing = true;
+        anyOk().then(function (ok) {
+            probing = false;
+            if (ok) { fails = 0; setState('good'); }
+            else if (++fails >= FAILS_NEEDED) {
+                setState(navigator.onLine ? 'reconnecting' : 'offline');
+            }
+        });
+    }
+
+    window.addEventListener('offline', function () { setState('offline'); });
+    window.addEventListener('online', function () {
+        if (state === 'offline') setState('reconnecting');
+        probe();
+    });
+    if (navigator.connection && navigator.connection.addEventListener) {
+        navigator.connection.addEventListener('change', probe);
+    }
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) probe(); });
+
+    setInterval(probe, 4000);
+    if (!navigator.onLine) setState('offline'); else probe();
+})();
+</script>
+
 </body>
+
 </html>

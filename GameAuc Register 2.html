@@ -329,5 +329,132 @@
           window.location.href = 'GameAuc Home 2.html'      
         }
       </script>
+<!-- GameAuc network status bar -->
+<style id="net-status-style">
+    #netStatusBar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2147483647;
+        padding: 12px 16px;
+        text-align: center;
+        font: 700 15px/1.2 'Segoe UI', Tahoma, Arial, sans-serif;
+        letter-spacing: 0.5px;
+        color: #fff;
+        background: #dc2626;
+        transform: translateY(100%);
+        transition: transform 0.45s ease, background-color 0.4s ease;
+        pointer-events: none;
+    }
+    #netStatusBar.show { transform: translateY(0); }
+    #netStatusBar.connected { background: #16a34a; }
+    #netStatusBar .dots::after {
+        content: '';
+        animation: netDots 1.2s steps(4, end) infinite;
+    }
+    #netStatusBar.connected .dots::after,
+    #netStatusBar.offline .dots::after { animation: none; content: ''; }
+    @keyframes netDots {
+        0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; }
+    }
+</style>
+<div id="netStatusBar" role="status" aria-live="polite"><span class="text"></span><span class="dots"></span></div>
+<script id="net-status-script">
+(function () {
+    var bar = document.getElementById('netStatusBar');
+    var text = bar.querySelector('.text');
+    var hideTimer = null;
+    var wasBad = false;          // true once we've shown a red state
+    var state = 'good';          // good | reconnecting | offline
+    var probing = false;
+
+    function show(cls, msg) {
+        clearTimeout(hideTimer);
+        bar.className = cls + ' show';
+        text.textContent = msg;
+    }
+
+    function setState(next) {
+        if (next === state) return;
+        state = next;
+        if (next === 'offline') {
+            wasBad = true;
+            show('offline', 'Offline');
+        } else if (next === 'reconnecting') {
+            wasBad = true;
+            show('reconnecting', 'Reconnecting');
+        } else if (next === 'good' && wasBad) {
+            wasBad = false;
+            show('connected', 'Connected');
+            hideTimer = setTimeout(function () {
+                bar.classList.remove('show');   // glide back down
+            }, 2500);
+        }
+    }
+
+    // Real connectivity test: online if ANY of several hosts responds
+    // (one host being blocked on a network no longer causes a false "Reconnecting")
+    var ENDPOINTS = [
+        'https://www.gstatic.com/generate_204',
+        'https://fonts.googleapis.com/css2?family=Inter',
+        'https://1.1.1.1/cdn-cgi/trace',
+        'https://www.cloudflare.com/cdn-cgi/trace'
+    ];
+    var fails = 0;               // consecutive failed checks
+    var FAILS_NEEDED = 2;        // avoid flicker from one bad check
+
+    function ping(url, ms) {
+        return new Promise(function (resolve, reject) {
+            var ctrl = window.AbortController ? new AbortController() : null;
+            var t = setTimeout(function () { if (ctrl) ctrl.abort(); reject(); }, ms);
+            fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + '_=' + Date.now(), {
+                mode: 'no-cors', cache: 'no-store', signal: ctrl ? ctrl.signal : undefined
+            }).then(function () { clearTimeout(t); resolve(); },
+                    function () { clearTimeout(t); reject(); });
+        });
+    }
+
+    function anyOk() {
+        return new Promise(function (resolve) {
+            var left = ENDPOINTS.length, done = false;
+            ENDPOINTS.forEach(function (u) {
+                ping(u, 6000).then(function () {
+                    if (!done) { done = true; resolve(true); }
+                }, function () {
+                    if (--left === 0 && !done) resolve(false);
+                });
+            });
+        });
+    }
+
+    function probe() {
+        if (!navigator.onLine) { fails = FAILS_NEEDED; setState('offline'); return; }
+        if (probing) return;
+        probing = true;
+        anyOk().then(function (ok) {
+            probing = false;
+            if (ok) { fails = 0; setState('good'); }
+            else if (++fails >= FAILS_NEEDED) {
+                setState(navigator.onLine ? 'reconnecting' : 'offline');
+            }
+        });
+    }
+
+    window.addEventListener('offline', function () { setState('offline'); });
+    window.addEventListener('online', function () {
+        if (state === 'offline') setState('reconnecting');
+        probe();
+    });
+    if (navigator.connection && navigator.connection.addEventListener) {
+        navigator.connection.addEventListener('change', probe);
+    }
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) probe(); });
+
+    setInterval(probe, 4000);
+    if (!navigator.onLine) setState('offline'); else probe();
+})();
+</script>
+
 </body>
 </html>
